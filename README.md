@@ -24,6 +24,9 @@ Welcome to the ReactJS WebRTC File Sharing System, a cutting-edge application th
 
 4. **Automated Download:** Once the file transfer reaches 100%, the shared file will be automatically downloaded to the system, ensuring a smooth and efficient user experience.
 
+## Related Repositories
+- [Backend - Signaling Server Repository](https://github.com/AbubakarWebDev/NodeJS-WebRTC-signaling-server): This repository holds the backend signaling server code that integrates with this frontend application. For a complete understanding and to see our WebRTC implementation in action, be sure to check out the backend signaling server repo as well.
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
