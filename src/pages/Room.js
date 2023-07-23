@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Container, Spinner } from "react-bootstrap";
+import { Container, Spinner, Button } from "react-bootstrap";
 
 import Peer from "simple-peer";
 import streamSaver from "streamsaver";
@@ -18,8 +18,22 @@ function Room() {
     const totalReceivedBytes = useRef(0);
 
     const [gotFile, setGotFile] = useState(false);
+    const [completeFile, setCompleteFile] = useState(false);
     const [connectionEstablished, setConnection] = useState(false);
     const [progressPercentage, setProgressPercentage] = useState(0);
+
+
+    function downloadFile() {
+        worker.postMessage("download");
+
+        worker.addEventListener("message", (event) => {
+            const stream = event.data.stream();
+
+            const fileStream = streamSaver.createWriteStream(JSON.parse(data).fileName);
+
+            stream.pipeTo(fileStream);
+        });
+    }
 
     function handleReceivingData(data) {
         if (data.toString().includes("fileMetaData")) {
@@ -27,17 +41,8 @@ function Room() {
             setGotFile(true);
         }
         else {
-
             if (data.toString().includes("done")) {
-                worker.postMessage("download");
-
-                worker.addEventListener("message", (event) => {
-                    const stream = event.data.stream();
-
-                    const fileStream = streamSaver.createWriteStream(JSON.parse(data).fileName);
-
-                    stream.pipeTo(fileStream);
-                });
+                setCompleteFile(true);
             }
             else {
                 totalReceivedBytes.current += data.length;
@@ -56,7 +61,6 @@ function Room() {
         });
 
         peer.on("signal", (signal) => {
-            console.log("addPeer signal: ", signal);
             socket.emit("sending_sdp_answer", { signal, callerID });
         });
 
@@ -71,23 +75,19 @@ function Room() {
         socket.emit("join_room", { roomID, init: false });
 
         function onReceiving_SDP_offer(payload) {
-            console.log("receive_sdp_offer: ", payload);
             peerRef.current = addPeer(payload.signal, payload.callerID);
 
             peerRef.current.on('connect', () => {
                 setConnection(true);
-                console.log('Connected to peer!');
             });
 
             peerRef.current.on('close', () => {
                 setConnection(false);
-                console.log('Disconnected to peer!');
             });
 
             peerRef.current.on('error', (err) => {
                 if (err.code === 'ERR_CONNECTION_FAILURE') {
                     setConnection(false);
-                    console.log('Disconnected to peer!');
                 }
 
                 console.log(err);
@@ -129,6 +129,17 @@ function Room() {
             {gotFile && (
                 <Container className="text-center">
                     {progressPercentage.toFixed()}%
+                </Container>
+            )}
+
+            {completeFile && (
+                <Container className="text-center">
+                    <br /><br />
+
+                    <h3> You have received a file. Would you like to download the file? </h3>
+                    <br />
+
+                    <Button onClick={downloadFile}>Yes</Button>
                 </Container>
             )}
         </Container>

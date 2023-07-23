@@ -24,6 +24,34 @@ Welcome to the ReactJS WebRTC File Sharing System, a cutting-edge application th
 
 4. **Automated Download:** Once the file transfer reaches 100%, the shared file will be automatically downloaded to the system, ensuring a smooth and efficient user experience.
 
+## Getting Started
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+
+You'll need [Git](https://git-scm.com), and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer.
+
+```
+node@18.13.0 or higher
+npm@9.2.0 or higher
+git@2.39.0 or higher
+```
+
+## Clone the repo
+
+```shell
+git clone https://github.com/AbubakarWebDev/ReactJS-WebRTC-file-sharing-system
+cd ReactJS-WebRTC-file-sharing-system
+```
+
+## Install npm packages
+
+Install the `npm` packages described in the `package.json` and verify that it works:
+
+```shell
+npm install
+npm run dev
+```
+
 ## Contribution
 
 Please feel free to contribute to this open-source project, report issues, and suggest improvements. Let's make file sharing smarter and more convenient together!

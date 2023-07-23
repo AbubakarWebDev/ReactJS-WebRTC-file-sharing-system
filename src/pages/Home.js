@@ -23,8 +23,8 @@ function Home() {
         // Keep track of the current byte position in the file
         let totalSentBytes = 0;
 
-        // Set the chunk size to 4KB (adjust as needed)
-        const chunkSize = 4 * 1024;
+        // Set the chunk size to 10KB (adjust as needed)
+        const chunkSize = 10 * 1024;
 
         // getting the size of the file
         const totalFileSize = file.size;
@@ -83,8 +83,6 @@ function Home() {
         });
 
         peer.on("signal", (signal) => {
-            console.log("createPeer signal: ", signal);
-
             socket.emit("sending_sdp_offer", {
                 userToSignal,
                 callerID,
@@ -96,24 +94,24 @@ function Home() {
     }
 
     function generateLink() {
+        if (!file) {
+            alert("Please Select a file First!");
+            return;
+        }
+
         const roomID = uuid();
 
         socket.emit("join_room", { roomID, init: true });
         setIsLinkGenerated(`http://localhost:3000/room/${roomID}`);
 
         socket.on("peer_connected", (peer) => {
-            console.log("peer_connected: ", peer);
             peerRef.current = createPeer(peer, socket.id);
         });
 
         function onReceiving_SDP_Answer(payload) {
-            console.log("receive_sdp_answer: ", payload);
-
             peerRef.current.signal(payload.signal);
 
             peerRef.current.on('connect', () => {
-                console.log('Connected to peer!');
-                
                 setProgressPercentage((prev) => {
                     return {
                         ...prev,
@@ -151,6 +149,7 @@ function Home() {
                 <Form.Control
                     size="lg"
                     type="file"
+                    required
                     onChange={selectFile}
                 ></Form.Control>
             </Form>
